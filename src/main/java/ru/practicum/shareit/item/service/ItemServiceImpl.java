@@ -30,7 +30,7 @@ public class ItemServiceImpl implements ItemService {
     public ResponseEntity<ItemDto> createItem(ItemDto item, Long userId) {
 
         User user = userDb.read(userId);
-        return new ResponseEntity<>(ItemMapper.toItemDTO(itemDb.createItem(ItemMapper.DtotoItem(item), user)), HttpStatus.CREATED);
+        return new ResponseEntity<>(ItemMapper.toItemDTO(itemDb.createItem(ItemMapper.dtoToItem(item), user)), HttpStatus.CREATED);
     }
 
     @Override
@@ -46,8 +46,8 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ResponseEntity<ItemDto> updateItem(Long itemId, Long userId, ItemDto item) {
         User user = userDb.read(userId);
-        return new ResponseEntity<>(ItemMapper.toItemDTO
-                (itemDb.updateItem(itemId, user, ItemMapper.DtotoItem(item))),
+        return new ResponseEntity<>(ItemMapper.toItemDTO(
+                itemDb.updateItem(itemId, user, ItemMapper.dtoToItem(item))),
                 HttpStatus.OK);
     }
 

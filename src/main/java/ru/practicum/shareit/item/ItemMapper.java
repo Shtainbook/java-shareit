@@ -23,7 +23,7 @@ public class ItemMapper {
         );
     }
 
-    public static Item DtotoItem(ItemDto itemDto) {
+    public static Item dtoToItem(ItemDto itemDto) {
         if (itemDto == null) {
             return null;
         }

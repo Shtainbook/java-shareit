@@ -16,6 +16,7 @@ import java.util.Map;
 public class UserDbImpl implements UserDb {
     private final Map<Long, User> allUsers = new HashMap<>();
     private Long userCounter = 1L;
+
     @Override
     public User create(User user) {
         validateUser(user);

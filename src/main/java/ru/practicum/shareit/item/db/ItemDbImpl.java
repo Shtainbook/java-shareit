@@ -33,8 +33,8 @@ public class ItemDbImpl implements ItemDb {
 
     @Override
     public Item readItem(Long id) {
-        Optional<Item> element = allItems.values().stream().flatMap(Collection::stream).
-                filter(a -> Objects.equals(a.getId(), id)).findFirst();//приходит id предмета или owner?
+        Optional<Item> element = allItems.values().stream().flatMap(Collection::stream)
+                .filter(a -> Objects.equals(a.getId(), id)).findFirst();//приходит id предмета или owner?
         if (element.isPresent()) {
             log.info("Вещь {} выдана пользователю {}", element.get().getName(), id);
             return element.get();
@@ -52,9 +52,9 @@ public class ItemDbImpl implements ItemDb {
     @Override
     public Item updateItem(Long itemId, User user, Item item) {
         checkOwner(itemId, user);
-        Item element = allItems.get(user.getId()).stream().
-                filter(a -> a.getId().equals(itemId)).findFirst().
-                orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Нет такого Item тут!"));
+        Item element = allItems.get(user.getId()).stream()
+                .filter(a -> a.getId().equals(itemId)).findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Нет такого Item тут!"));
         item.setOwner(user);
         item.setId(itemId);
         if (item.getName() == null) {
@@ -79,8 +79,8 @@ public class ItemDbImpl implements ItemDb {
 
     @Override
     public List<Item> searchPersonalItems(Long id) {
-        List<Item> element = allItems.values().stream().flatMap(Collection::stream).
-                filter(a -> Objects.equals(a.getOwner().getId(), id)).collect(Collectors.toList());
+        List<Item> element = allItems.values().stream().flatMap(Collection::stream)
+                .filter(a -> Objects.equals(a.getOwner().getId(), id)).collect(Collectors.toList());
         log.info("Вещи пользователя " + id + " найдены");
         return element;
     }
@@ -90,8 +90,7 @@ public class ItemDbImpl implements ItemDb {
         String search = text.toLowerCase();
         List<Item> element = new ArrayList<>();
         allItems.values().forEach(
-                itemsList -> element.addAll
-                        (
+                itemsList -> element.addAll(
                                 itemsList.stream().filter(item -> (item.getDescription().toLowerCase().contains(search)
                                                 || item.getName().toLowerCase().contains(search))
                                                 && item.getAvailable())
