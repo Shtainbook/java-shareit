@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserMapper;
-import ru.practicum.shareit.user.db.UserDb;
+import ru.practicum.shareit.user.db.UserStorage;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.util.ArrayList;
@@ -14,43 +14,42 @@ import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
-    private final UserDb userDb;
+    private final UserStorage userStorage;
 
     @Autowired
-    public UserServiceImpl(UserDb userDb) {
-        this.userDb = userDb;
+    public UserServiceImpl(UserStorage userStorage) {
+        this.userStorage = userStorage;
     }
 
     @Override
-    public ResponseEntity<UserDto> create(UserDto userDto) {
+    public UserDto create(UserDto userDto) {
         User userTest = UserMapper.dtoToUser(userDto);
-        User afterStorage = userDb.create(userTest);
-        UserDto erken = UserMapper.toUserDTO(afterStorage);
-        return new ResponseEntity<>(erken, HttpStatus.CREATED);
+        User afterStorage = userStorage.create(userTest);
+        return UserMapper.toUserDTO(afterStorage);
     }
 
     @Override
-    public ResponseEntity<UserDto> update(UserDto userDto, Long id) {
-        return new ResponseEntity<>(UserMapper.toUserDTO(userDb.update(UserMapper.dtoToUser(userDto), id)), HttpStatus.OK);
+    public UserDto update(UserDto userDto, Long id) {
+        return UserMapper.toUserDTO(userStorage.update(UserMapper.dtoToUser(userDto), id));
     }
 
     @Override
-    public ResponseEntity<UserDto> read(Long id) {
-        return new ResponseEntity<>(UserMapper.toUserDTO(userDb.read(id)), HttpStatus.OK);
+    public UserDto read(Long id) {
+        return UserMapper.toUserDTO(userStorage.read(id));
     }
 
     @Override
-    public ResponseEntity<List<UserDto>> readAll() {
+    public List<UserDto> readAll() {
         ArrayList<UserDto> element = new ArrayList<>();
-        for (User component : userDb.readAll()
+        for (User component : userStorage.readAll()
         ) {
             element.add(UserMapper.toUserDTO(component));
         }
-        return new ResponseEntity<>(element, HttpStatus.OK);
+        return element;
     }
 
     @Override
-    public ResponseEntity<UserDto> delete(Long id) {
-        return new ResponseEntity<>(UserMapper.toUserDTO(userDb.delete(id)), HttpStatus.OK);
+    public UserDto delete(Long id) {
+        return UserMapper.toUserDTO(userStorage.delete(id));
     }
 }

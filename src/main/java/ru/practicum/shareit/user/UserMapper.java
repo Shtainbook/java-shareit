@@ -1,7 +1,9 @@
 package ru.practicum.shareit.user;
 
+import lombok.NoArgsConstructor;
 import ru.practicum.shareit.user.dto.UserDto;
 
+@NoArgsConstructor
 public class UserMapper {
     public static UserDto toUserDTO(User user) {
         if (user == null) {

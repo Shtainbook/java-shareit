@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class UserDbImpl implements UserDb {
+public class UserStorageImpl implements UserStorage {
     private final Map<Long, User> allUsers = new HashMap<>();
     private Long userCounter = 1L;
 

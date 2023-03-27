@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item;
 
+import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
@@ -7,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@NoArgsConstructor
 public class ItemMapper {
 
     public static ItemDto toItemDTO(Item item) {

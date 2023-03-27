@@ -4,7 +4,7 @@ import ru.practicum.shareit.user.User;
 
 import java.util.List;
 
-public interface UserDb {
+public interface UserStorage {
     User create(User user);
 
     User read(Long id);

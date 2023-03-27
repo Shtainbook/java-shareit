@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class ItemDbImpl implements ItemDb {
+public class ItemStorageImpl implements ItemStorage {
 
     private final Map<Long, List<Item>> allItems = new HashMap<>();
     private Long itemCounter = 1L;

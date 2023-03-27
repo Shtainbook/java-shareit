@@ -7,17 +7,17 @@ import ru.practicum.shareit.item.dto.ItemListDto;
 import java.util.List;
 
 public interface ItemService {
-    ResponseEntity<ItemDto> createItem(ItemDto item, Long userId);
+    ItemDto createItem(ItemDto item, Long userId);
 
-    ResponseEntity<ItemDto> readItem(Long id);
+    ItemDto readItem(Long id);
 
-    ResponseEntity<List<ItemDto>> readAllItem();
+    List<ItemDto> readAllItem();
 
-    ResponseEntity<ItemDto> updateItem(Long itemId, Long userId, ItemDto item);
+    ItemDto updateItem(Long itemId, Long userId, ItemDto item);
 
-    ResponseEntity<ItemDto> deleteItem(Long id);
+    ItemDto deleteItem(Long id);
 
-    ResponseEntity<List<ItemDto>> searchPersonalItems(Long id);
+    List<ItemDto> searchPersonalItems(Long id);
 
-    ResponseEntity<ItemListDto> searchItemsByName(String text);
+    ItemListDto searchItemsByName(String text);
 }

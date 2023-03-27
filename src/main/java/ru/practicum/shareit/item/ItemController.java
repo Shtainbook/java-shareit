@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -28,40 +29,41 @@ public class ItemController {
     public ResponseEntity<ItemDto> createItem(@RequestHeader("X-Sharer-User-Id") Long userId,
                                               @Valid
                                               @RequestBody ItemDto itemDto) {
-        return itemService.createItem(itemDto, userId);
+        return new ResponseEntity<>(itemService.createItem(itemDto, userId), HttpStatus.CREATED);
     }
 
     @GetMapping("{id}")
     public ResponseEntity<ItemDto> readItem(@PathVariable Long id) {
-        return itemService.readItem(id);
+        return new ResponseEntity<>(itemService.readItem(id), HttpStatus.OK);
     }
 
     @GetMapping
     public ResponseEntity<List<ItemDto>> searchPersonalItems(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemService.searchPersonalItems(userId);
+        return new ResponseEntity<>(itemService.searchPersonalItems(userId), HttpStatus.OK);
     }
 
     @GetMapping("search")
     public ResponseEntity<ItemListDto> searchItemsByName(@RequestParam String text) {
-        // ?
-        return itemService.searchItemsByName(text);
+        return new ResponseEntity<>(itemService.searchItemsByName(text), HttpStatus.OK);
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<ItemDto>> readAllItem() {
-        return itemService.readAllItem();
+        return new ResponseEntity<>(itemService.readAllItem(), HttpStatus.OK);
     }
 
     @DeleteMapping("{id}")
     public ResponseEntity<ItemDto> deleteItem(@PathVariable Long id) {
-        return itemService.deleteItem(id);
+
+        return new ResponseEntity<>(itemService.deleteItem(id),HttpStatus.OK);
     }
 
     @PatchMapping("{itemId}")
     public ResponseEntity<ItemDto> updateItem(@RequestHeader("X-Sharer-User-Id") @Min(1) Long userId,
                                               @RequestBody ItemDto itemDto,
                                               @PathVariable Long itemId) {
-        return itemService.updateItem(itemId, userId, itemDto);
+        return new ResponseEntity<>(itemService.updateItem(itemId, userId, itemDto),
+                HttpStatus.OK);
     }
 }
 

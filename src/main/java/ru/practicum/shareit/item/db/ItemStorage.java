@@ -5,7 +5,7 @@ import ru.practicum.shareit.user.User;
 
 import java.util.List;
 
-public interface ItemDb {
+public interface ItemStorage {
     Item createItem(Item item, User user);
 
     Item readItem(Long id);

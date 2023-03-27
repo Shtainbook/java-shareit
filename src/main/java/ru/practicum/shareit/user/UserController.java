@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -27,28 +28,28 @@ public class UserController {
 
     @GetMapping("{id}")
     public ResponseEntity<UserDto> getUser(@PathVariable @Min(1) long id) {
-        return userService.read(id);
+        return new ResponseEntity<>(userService.read(id), HttpStatus.OK);
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<UserDto>> getAllUser() {
-        return userService.readAll();
+        return new ResponseEntity<>(userService.readAll(), HttpStatus.OK);
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
-        return userService.create(userDto);
+        return new ResponseEntity<>(userService.create(userDto), HttpStatus.OK);
     }
 
     @PatchMapping("{id}")
     public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto, @PathVariable long id) {
-        UserDto userDtoTwo = userService.update(userDto, id).getBody();
+        UserDto userDtoTwo = userService.update(userDto, id);
         System.out.println(userDtoTwo);
-        return userService.update(userDto, id);
+        return new ResponseEntity<>(userService.update(userDto, id), HttpStatus.OK);
     }
 
     @DeleteMapping("{id}")
     public ResponseEntity<UserDto> deleteUser(@Min(1) @PathVariable long id) {
-        return userService.delete(id);
+        return new ResponseEntity<>(userService.delete(id), HttpStatus.OK);
     }
 }
