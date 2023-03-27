@@ -1,6 +1,5 @@
 package ru.practicum.shareit.user.service;
 
-import org.springframework.http.ResponseEntity;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.util.List;
