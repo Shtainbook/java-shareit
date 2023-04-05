@@ -1,49 +1,27 @@
 package ru.practicum.shareit.item;
 
-import lombok.NoArgsConstructor;
-import ru.practicum.shareit.item.dto.ItemDto;
+import org.mapstruct.*;
+import ru.practicum.shareit.booking.dto.BookingShortDto;
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.item.dto.*;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+@Mapper(componentModel = "spring")
+public interface ItemMapper {
+    ItemDtoResponse mapToItemDtoResponse(Item item);
 
-@NoArgsConstructor
-public class ItemMapper {
+    Item mapToItemFromItemDto(ItemDto itemDto);
 
-    public static ItemDto toItemDTO(Item item) {
-        if (item == null) {
-            return null;
-        }
-        return new ItemDto(
-                item.getId(),
-                item.getName(),
-                item.getDescription(),
-                item.getAvailable(),
-                item.getOwner(),
-                item.getRequest()
-        );
-    }
+    @Mapping(source = "booker.id", target = "bookerId")
+    BookingShortDto mapToBookingShortDto(Booking booking);
 
-    public static Item dtoToItem(ItemDto itemDto) {
-        if (itemDto == null) {
-            return null;
-        }
-        return new Item(
-                itemDto.getId(),
-                itemDto.getName(),
-                itemDto.getDescription(),
-                itemDto.getAvailable(),
-                itemDto.getOwner(),
-                itemDto.getRequest()
-        );
-    }
+    Comment mapToCommentFromCommentDto(CommentDto commentDto);
 
-    public static List<ItemDto> toListItemDto(List<Item> items) {
-        List<ItemDto> itemDto = new ArrayList<>();
-        if (items == null) {
-            return itemDto;
-        }
-        return items.stream().map(ItemMapper::toItemDTO).collect(Collectors.toList());
-    }
+    @Mapping(source = "author.name", target = "authorName")
+    CommentDtoResponse mapToCommentDtoResponseFromComment(Comment comment);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Item mapToItemFromItemDtoUpdate(ItemDtoUpdate itemDtoUpdate, @MappingTarget Item item);
+
 }

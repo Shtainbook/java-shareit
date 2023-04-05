@@ -1,12 +1,12 @@
 package ru.practicum.shareit.item.dto;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 import java.util.List;
 
-@AllArgsConstructor
+@Builder
 public class ItemListDto {
     @JsonValue
-    private List<ItemDto> items;
+    private List<ItemDtoResponse> items;
 }

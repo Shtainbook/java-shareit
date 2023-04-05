@@ -1,69 +1,62 @@
 package ru.practicum.shareit.item;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemListDto;
-import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.item.dto.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import java.util.List;
 
 /**
  * TODO Sprint add-controllers.
  */
 @RestController
 @RequestMapping("/items")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ItemController {
     private final ItemService itemService;
 
-    @Autowired
-    public ItemController(ItemService itemService) {
-        this.itemService = itemService;
-    }
-
     @PostMapping
-    public ResponseEntity<ItemDto> createItem(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                              @Valid
-                                              @RequestBody ItemDto itemDto) {
-        return new ResponseEntity<>(itemService.createItem(itemDto, userId), HttpStatus.CREATED);
-    }
-
-    @GetMapping("{id}")
-    public ResponseEntity<ItemDto> readItem(@PathVariable Long id) {
-        return new ResponseEntity<>(itemService.readItem(id), HttpStatus.OK);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<ItemDto>> searchPersonalItems(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        return new ResponseEntity<>(itemService.searchPersonalItems(userId), HttpStatus.OK);
-    }
-
-    @GetMapping("search")
-    public ResponseEntity<ItemListDto> searchItemsByName(@RequestParam String text) {
-        return new ResponseEntity<>(itemService.searchItemsByName(text), HttpStatus.OK);
-    }
-
-    @GetMapping("/all")
-    public ResponseEntity<List<ItemDto>> readAllItem() {
-        return new ResponseEntity<>(itemService.readAllItem(), HttpStatus.OK);
-    }
-
-    @DeleteMapping("{id}")
-    public ResponseEntity<ItemDto> deleteItem(@PathVariable Long id) {
-
-        return new ResponseEntity<>(itemService.deleteItem(id),HttpStatus.OK);
+    public ResponseEntity<ItemDtoResponse> createItem(@RequestHeader("X-Sharer-User-Id") @Min(1) Long userId,
+                                                      @Valid @RequestBody ItemDto itemDto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(itemService.createItem(itemDto, userId));
     }
 
     @PatchMapping("{itemId}")
-    public ResponseEntity<ItemDto> updateItem(@RequestHeader("X-Sharer-User-Id") @Min(1) Long userId,
-                                              @RequestBody ItemDto itemDto,
-                                              @PathVariable Long itemId) {
-        return new ResponseEntity<>(itemService.updateItem(itemId, userId, itemDto),
-                HttpStatus.OK);
+    public ResponseEntity<ItemDtoResponse> updateItem(@RequestHeader("X-Sharer-User-Id") @Min(1) Long userId,
+                                                      @RequestBody ItemDtoUpdate itemDtoUpdate,
+                                                      @PathVariable Long itemId) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(itemService.updateItem(itemId, userId, itemDtoUpdate));
     }
-}
 
+    @GetMapping("{itemId}")
+    public ResponseEntity<ItemDtoResponse> getItemByItemId(@RequestHeader("X-Sharer-User-Id") @Min(1) Long userId,
+                                                           @PathVariable Long itemId) {
+        return ResponseEntity.status(HttpStatus.OK).body(itemService.getItemByItemId(userId, itemId));
+    }
+
+    @GetMapping
+    public ResponseEntity<ItemListDto> getPersonalItems(@RequestHeader("X-Sharer-User-Id") @Min(1) Long userId) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(itemService.getPersonalItems(userId));
+    }
+
+    @GetMapping("search")
+    public ResponseEntity<ItemListDto> getFoundItems(@RequestParam String text) {
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(itemService.getFoundItems(text));
+    }
+
+    @PostMapping("{itemId}/comment")
+    public ResponseEntity<CommentDtoResponse> addComment(@PathVariable @Min(1) Long itemId,
+                                                         @RequestHeader("X-Sharer-User-Id") @Min(1) Long userId,
+                                                         @Valid @RequestBody CommentDto commentDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(itemService.addComment(itemId, userId, commentDto));
+    }
+
+}
