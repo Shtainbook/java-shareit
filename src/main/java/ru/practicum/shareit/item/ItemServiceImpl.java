@@ -8,6 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.Status;
+import ru.practicum.shareit.booking.dto.BookingShortDto;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
@@ -16,7 +18,9 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,18 +59,30 @@ public class ItemServiceImpl implements ItemService {
         Item item = items.findById(itemId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Предмета с id=" + itemId + " нет"));
         ItemDtoResponse itemDtoResponse = mapper.mapToItemDtoResponse(item);
+        System.out.println(itemDtoResponse + " 58");
         if (item.getOwner().getId().equals(userId)) {
+//            if (item.getId() == 4){
+//                itemDtoResponse.setLastBooking(new BookingShortDto(8l,1l));
+//                return itemDtoResponse;
+
+            // не могу пройти здесь последний тест, Евгений, что делаю не так?
+            // Кухонный стол вызывается всего один раз. Поэтому по идее у него нет значения в LastBooking - и должно быть нулл,
+            // но тест хочет не нулл....
+
             itemDtoResponse.setLastBooking(mapper
                     .mapToBookingShortDto(bookings
                             .findFirstByItemIdAndEndBeforeAndStatusOrderByEndDesc(
                                     itemId, LocalDateTime.now(), Status.APPROVED)
                     ));
+
             itemDtoResponse.setNextBooking(mapper.mapToBookingShortDto(bookings
                     .findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(
                             itemId, LocalDateTime.now(), Status.APPROVED)
             ));
+            System.out.println(itemDtoResponse + " 69");
             return itemDtoResponse;
         }
+        System.out.println(itemDtoResponse + " 72");
         return itemDtoResponse;
     }
 

@@ -43,9 +43,9 @@ public class BookingServiceImpl implements BookingService {
                 User user = users.findById(bookerId).orElseThrow(
                         () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                                 "Пользователя с id=" + bookerId + " нет"));
-               Booking booking = mapper.mapToBookingFromBookingDto(bookingDto);
-               booking.setItem(item);
-               booking.setBooker(user);
+                Booking booking = mapper.mapToBookingFromBookingDto(bookingDto);
+                booking.setItem(item);
+                booking.setBooker(user);
                 return mapper.mapToBookingDtoResponse(bookings.save(booking));
             } else {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Вещь с id=" + item.getId()
@@ -116,7 +116,6 @@ public class BookingServiceImpl implements BookingService {
         } else {
             return getListBookings(state, userId, true);
         }
-
     }
 
     private BookingListDto getListBookings(String state, Long userId, Boolean isOwner) {
@@ -138,12 +137,12 @@ public class BookingServiceImpl implements BookingService {
                     itemsId = items.findAllItemIdByOwnerId(userId);
                     return BookingListDto.builder().bookings(
                             bookings.findAllByItemIdInAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
-                                            itemsId, LocalDateTime.now(),LocalDateTime.now()).stream()
+                                            itemsId, LocalDateTime.now(), LocalDateTime.now()).stream()
                                     .map(mapper::mapToBookingDtoResponse).collect(Collectors.toList())).build();
                 } else {
                     return BookingListDto.builder().bookings(
                             bookings.findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
-                                            userId, LocalDateTime.now(),LocalDateTime.now()).stream()
+                                            userId, LocalDateTime.now(), LocalDateTime.now()).stream()
                                     .map(mapper::mapToBookingDtoResponse).collect(Collectors.toList())).build();
                 }
             case PAST:
@@ -206,7 +205,8 @@ public class BookingServiceImpl implements BookingService {
                                     .stream().map(mapper::mapToBookingDtoResponse).collect(Collectors.toList()))
                             .build();
                 }
-            default: throw new StateException("Unknown state: " + state);
+            default:
+                throw new StateException("Unknown state: " + state);
         }
     }
 }

@@ -58,5 +58,4 @@ public class ItemController {
                                                          @Valid @RequestBody CommentDto commentDto) {
         return ResponseEntity.status(HttpStatus.OK).body(itemService.addComment(itemId, userId, commentDto));
     }
-
 }

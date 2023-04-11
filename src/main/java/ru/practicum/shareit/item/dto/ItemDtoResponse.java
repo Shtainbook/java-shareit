@@ -16,9 +16,23 @@ public class ItemDtoResponse {
     private String name;
     private String description;
     private Boolean available;
-    //private User owner;
     private ItemRequest request;
     private BookingShortDto lastBooking;
     private BookingShortDto nextBooking;
+
     private Set<CommentDtoResponse> comments;
+
+    @Override
+    public String toString() {
+        return "ItemDtoResponse{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", available=" + available +
+                ", request=" + request +
+                ", lastBooking=" + lastBooking +
+                ", nextBooking=" + nextBooking +
+                ", comments=" + comments +
+                '}';
+    }
 }
