@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class BookingServiceImpl implements BookingService {
-    private final BookingRepository bookings;
-    private final UserRepository users;
-    private final ItemRepository items;
-    private final BookingMapper mapper;
+    private final BookingRepository bookingRepository;
+    private final UserRepository userRepository;
+    private final ItemRepository itemRepository;
+    private final BookingMapper bookingMapper;
 
     @Override
     @Transactional
@@ -35,18 +35,18 @@ public class BookingServiceImpl implements BookingService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Дата окончания бронирования не может быть раньше даты начала");
         }
-        Item item = items.findById(bookingDto.getItemId()).orElseThrow(
+        Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         "Предмета с id=" + bookingDto.getItemId() + " нет"));
         if (!item.getOwner().getId().equals(bookerId)) {
             if (item.getAvailable()) {
-                User user = users.findById(bookerId).orElseThrow(
+                User user = userRepository.findById(bookerId).orElseThrow(
                         () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                                 "Пользователя с id=" + bookerId + " нет"));
-                Booking booking = mapper.mapToBookingFromBookingDto(bookingDto);
+                Booking booking = bookingMapper.mapToBookingFromBookingDto(bookingDto);
                 booking.setItem(item);
                 booking.setBooker(user);
-                return mapper.mapToBookingDtoResponse(bookings.save(booking));
+                return bookingMapper.mapToBookingDtoResponse(bookingRepository.save(booking));
             } else {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Вещь с id=" + item.getId()
                         + " недоступна для бронирования");
@@ -63,7 +63,7 @@ public class BookingServiceImpl implements BookingService {
         if (!(approve.equals("true") || approve.equals("false"))) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Неккоректный параметр строки approved");
         }
-        Booking booking = bookings.findById(bookingId).orElseThrow(
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Бронирования с id=" + bookingId + " нет"));
         if (!booking.getStatus().equals(Status.WAITING)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -75,7 +75,7 @@ public class BookingServiceImpl implements BookingService {
             } else {
                 booking.setStatus(Status.REJECTED);
             }
-            return mapper.mapToBookingDtoResponse(bookings.save(booking));
+            return bookingMapper.mapToBookingDtoResponse(bookingRepository.save(booking));
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "Пользователь с id=" + ownerId + " не является владельцем вещи с id=" + booking.getItem().getOwner().getId());
@@ -85,19 +85,19 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional(readOnly = true)
     public BookingDtoResponse getBookingByIdForOwnerAndBooker(Long bookingId, Long userId) {
-        Booking booking = bookings.findById(bookingId).orElseThrow(
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Бронирования с id=" + bookingId + " нет"));
         if (!(booking.getBooker().getId().equals(userId) || booking.getItem().getOwner().getId().equals(userId))) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь с id=" + userId
                     + " не является автором бронирования или владельцем вещи, к которой относится бронирование");
         }
-        return mapper.mapToBookingDtoResponse(booking);
+        return bookingMapper.mapToBookingDtoResponse(booking);
     }
 
     @Override
     @Transactional(readOnly = true)
     public BookingListDto getAllBookingsForUser(Long userId, String state) {
-        if (!users.existsById(userId)) {
+        if (!userRepository.existsById(userId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователя с id=" + userId + " не существует");
         } else {
             return getListBookings(state, userId, false);
@@ -107,10 +107,10 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional(readOnly = true)
     public BookingListDto getAllBookingsForItemsUser(Long userId, String state) {
-        if (!users.existsById(userId)) {
+        if (!userRepository.existsById(userId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователя с id=" + userId + " не существует");
         }
-        if (!items.existsItemByOwnerId(userId)) {
+        if (!itemRepository.existsItemByOwnerId(userId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     "У пользователя с id=" + userId + " нет зарегестрированых вещей");
         } else {
@@ -123,86 +123,86 @@ public class BookingServiceImpl implements BookingService {
         switch (State.fromValue(state.toUpperCase())) {
             case ALL:
                 if (isOwner) {
-                    itemsId = items.findAllItemIdByOwnerId(userId);
+                    itemsId = itemRepository.findAllItemIdByOwnerId(userId);
                     return BookingListDto.builder()
-                            .bookings(bookings.findAllByItemIdInOrderByStartDesc(itemsId).stream()
-                                    .map(mapper::mapToBookingDtoResponse).collect(Collectors.toList())).build();
+                            .bookings(bookingRepository.findAllByItemIdInOrderByStartDesc(itemsId).stream()
+                                    .map(bookingMapper::mapToBookingDtoResponse).collect(Collectors.toList())).build();
                 } else {
                     return BookingListDto.builder()
-                            .bookings(bookings.findAllByBookerIdOrderByStartDesc(userId).stream()
-                                    .map(mapper::mapToBookingDtoResponse).collect(Collectors.toList())).build();
+                            .bookings(bookingRepository.findAllByBookerIdOrderByStartDesc(userId).stream()
+                                    .map(bookingMapper::mapToBookingDtoResponse).collect(Collectors.toList())).build();
                 }
             case CURRENT:
                 if (isOwner) {
-                    itemsId = items.findAllItemIdByOwnerId(userId);
+                    itemsId = itemRepository.findAllItemIdByOwnerId(userId);
                     return BookingListDto.builder().bookings(
-                            bookings.findAllByItemIdInAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
+                            bookingRepository.findAllByItemIdInAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
                                             itemsId, LocalDateTime.now(), LocalDateTime.now()).stream()
-                                    .map(mapper::mapToBookingDtoResponse).collect(Collectors.toList())).build();
+                                    .map(bookingMapper::mapToBookingDtoResponse).collect(Collectors.toList())).build();
                 } else {
                     return BookingListDto.builder().bookings(
-                            bookings.findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
+                            bookingRepository.findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
                                             userId, LocalDateTime.now(), LocalDateTime.now()).stream()
-                                    .map(mapper::mapToBookingDtoResponse).collect(Collectors.toList())).build();
+                                    .map(bookingMapper::mapToBookingDtoResponse).collect(Collectors.toList())).build();
                 }
             case PAST:
                 if (isOwner) {
-                    itemsId = items.findAllItemIdByOwnerId(userId);
+                    itemsId = itemRepository.findAllItemIdByOwnerId(userId);
                     return BookingListDto.builder()
-                            .bookings(bookings
+                            .bookings(bookingRepository
                                     .findAllByItemIdInAndEndIsBeforeOrderByStartDesc(itemsId, LocalDateTime.now())
-                                    .stream().map(mapper::mapToBookingDtoResponse).collect(Collectors.toList()))
+                                    .stream().map(bookingMapper::mapToBookingDtoResponse).collect(Collectors.toList()))
                             .build();
                 } else {
                     return BookingListDto.builder()
-                            .bookings(bookings
+                            .bookings(bookingRepository
                                     .findAllByBookerIdAndEndIsBeforeOrderByStartDesc(userId, LocalDateTime.now())
-                                    .stream().map(mapper::mapToBookingDtoResponse).collect(Collectors.toList()))
+                                    .stream().map(bookingMapper::mapToBookingDtoResponse).collect(Collectors.toList()))
                             .build();
                 }
             case FUTURE:
                 if (isOwner) {
-                    itemsId = items.findAllItemIdByOwnerId(userId);
+                    itemsId = itemRepository.findAllItemIdByOwnerId(userId);
                     return BookingListDto.builder()
-                            .bookings(bookings
+                            .bookings(bookingRepository
                                     .findAllByItemIdInAndStartIsAfterOrderByStartDesc(itemsId, LocalDateTime.now())
-                                    .stream().map(mapper::mapToBookingDtoResponse).collect(Collectors.toList()))
+                                    .stream().map(bookingMapper::mapToBookingDtoResponse).collect(Collectors.toList()))
                             .build();
                 } else {
                     return BookingListDto.builder()
-                            .bookings(bookings
+                            .bookings(bookingRepository
                                     .findAllByBookerIdAndStartIsAfterOrderByStartDesc(userId, LocalDateTime.now())
-                                    .stream().map(mapper::mapToBookingDtoResponse).collect(Collectors.toList()))
+                                    .stream().map(bookingMapper::mapToBookingDtoResponse).collect(Collectors.toList()))
                             .build();
                 }
             case WAITING:
                 if (isOwner) {
-                    itemsId = items.findAllItemIdByOwnerId(userId);
+                    itemsId = itemRepository.findAllItemIdByOwnerId(userId);
                     return BookingListDto.builder()
-                            .bookings(bookings
+                            .bookings(bookingRepository
                                     .findAllByItemIdInAndStatusIsOrderByStartDesc(itemsId, Status.WAITING)
-                                    .stream().map(mapper::mapToBookingDtoResponse).collect(Collectors.toList()))
+                                    .stream().map(bookingMapper::mapToBookingDtoResponse).collect(Collectors.toList()))
                             .build();
                 } else {
                     return BookingListDto.builder()
-                            .bookings(bookings
+                            .bookings(bookingRepository
                                     .findAllByBookerIdAndStatusIsOrderByStartDesc(userId, Status.WAITING)
-                                    .stream().map(mapper::mapToBookingDtoResponse).collect(Collectors.toList()))
+                                    .stream().map(bookingMapper::mapToBookingDtoResponse).collect(Collectors.toList()))
                             .build();
                 }
             case REJECTED:
                 if (isOwner) {
-                    itemsId = items.findAllItemIdByOwnerId(userId);
+                    itemsId = itemRepository.findAllItemIdByOwnerId(userId);
                     return BookingListDto.builder()
-                            .bookings(bookings
+                            .bookings(bookingRepository
                                     .findAllByItemIdInAndStatusIsOrderByStartDesc(itemsId, Status.REJECTED)
-                                    .stream().map(mapper::mapToBookingDtoResponse).collect(Collectors.toList()))
+                                    .stream().map(bookingMapper::mapToBookingDtoResponse).collect(Collectors.toList()))
                             .build();
                 } else {
                     return BookingListDto.builder()
-                            .bookings(bookings
+                            .bookings(bookingRepository
                                     .findAllByBookerIdAndStatusIsOrderByStartDesc(userId, Status.REJECTED)
-                                    .stream().map(mapper::mapToBookingDtoResponse).collect(Collectors.toList()))
+                                    .stream().map(bookingMapper::mapToBookingDtoResponse).collect(Collectors.toList()))
                             .build();
                 }
             default:
