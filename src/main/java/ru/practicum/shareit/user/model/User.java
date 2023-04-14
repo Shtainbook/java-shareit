@@ -1,7 +1,6 @@
 package ru.practicum.shareit.user.model;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Hibernate;
