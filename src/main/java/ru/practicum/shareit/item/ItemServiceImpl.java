@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.Status;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
@@ -56,19 +57,13 @@ public class ItemServiceImpl implements ItemService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Предмета с id=" + itemId + " нет"));
         ItemDtoResponse itemDtoResponse = itemMapper.mapToItemDtoResponse(item);
         if (item.getOwner().getId().equals(userId)) {
-//            if (item.getId() == 4){
-//                itemDtoResponse.setLastBooking(new BookingShortDto(8l,1l));
-//                return itemDtoResponse;
 
-            // не могу пройти здесь последний тест, Евгений, что делаю не так?
-            // Кухонный стол вызывается всего один раз. Поэтому по идее у него нет значения в LastBooking - и должно быть нулл,
-            // но тест хочет не нулл....
-
+            Booking lastBooking = bookingRepository.findFirstByItemIdAndEndBeforeAndStatusOrderByEndDesc(itemId, LocalDateTime.now(), Status.APPROVED);
+            if (lastBooking == null) {
+                lastBooking = bookingRepository.findFirstByItemIdAndStartBeforeAndEndAfterAndStatusOrderByEndDesc(itemId, LocalDateTime.now(), LocalDateTime.now(), Status.APPROVED);
+            }
             itemDtoResponse.setLastBooking(itemMapper
-                    .mapToBookingShortDto(bookingRepository
-                            .findFirstByItemIdAndEndBeforeAndStatusOrderByEndDesc(
-                                    itemId, LocalDateTime.now(), Status.APPROVED)
-                    ));
+                    .mapToBookingShortDto(lastBooking));
             itemDtoResponse.setNextBooking(itemMapper.mapToBookingShortDto(bookingRepository
                     .findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(
                             itemId, LocalDateTime.now(), Status.APPROVED)
@@ -77,8 +72,6 @@ public class ItemServiceImpl implements ItemService {
         }
         return itemDtoResponse;
     }
-
-
 
     @Override
     @Transactional(readOnly = true)
