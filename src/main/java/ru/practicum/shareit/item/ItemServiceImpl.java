@@ -55,7 +55,6 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(itemId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Предмета с id=" + itemId + " нет"));
         ItemDtoResponse itemDtoResponse = itemMapper.mapToItemDtoResponse(item);
-        System.out.println(itemDtoResponse + " 58");
         if (item.getOwner().getId().equals(userId)) {
 //            if (item.getId() == 4){
 //                itemDtoResponse.setLastBooking(new BookingShortDto(8l,1l));
@@ -70,17 +69,16 @@ public class ItemServiceImpl implements ItemService {
                             .findFirstByItemIdAndEndBeforeAndStatusOrderByEndDesc(
                                     itemId, LocalDateTime.now(), Status.APPROVED)
                     ));
-
             itemDtoResponse.setNextBooking(itemMapper.mapToBookingShortDto(bookingRepository
                     .findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(
                             itemId, LocalDateTime.now(), Status.APPROVED)
             ));
-            System.out.println(itemDtoResponse + " 69");
             return itemDtoResponse;
         }
-        System.out.println(itemDtoResponse + " 72");
         return itemDtoResponse;
     }
+
+
 
     @Override
     @Transactional(readOnly = true)
