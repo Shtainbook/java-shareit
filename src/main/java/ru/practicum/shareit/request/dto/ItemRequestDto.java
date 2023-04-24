@@ -1,17 +1,20 @@
 package ru.practicum.shareit.request.dto;
 
+import lombok.Builder;
 import lombok.Data;
-import ru.practicum.shareit.user.model.User;
+import lombok.extern.jackson.Jacksonized;
 
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 /**
  * TODO Sprint add-item-requests.
  */
+@Builder
 @Data
+@Jacksonized
 public class ItemRequestDto {
-    private Long id;
+    @NotBlank(message = "поле text не должно быть пустым")
+    @Size(max = 500, message = "Превышена максимальная длина сообщения")
     private String description;
-    private User requestor;
-    private LocalDateTime created;
 }

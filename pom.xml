@@ -66,7 +66,6 @@
 			<version>3.2.0</version>
 		</dependency>
 		<dependency>
-
 			<groupId>org.jacoco</groupId>
 			<artifactId>jacoco-maven-plugin</artifactId>
 			<version>0.8.8</version>
@@ -81,6 +80,13 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>3.23.1</version>
+			<scope>test</scope>
 		</dependency>
 
 	</dependencies>
@@ -191,6 +197,12 @@
 					<version>0.8.8</version>
 					<configuration>
 						<output>file</output>
+						<excludes>
+							<exclude>**/*BookingMapperImpl.*</exclude>
+							<exclude>**/*ItemMapperImpl.*</exclude>
+							<exclude>**/*ItemRequestMapperImpl.*</exclude>
+							<exclude>**/*UserMapperImpl.*</exclude>
+						</excludes>
 					</configuration>
 					<executions>
 						<execution>
@@ -205,6 +217,12 @@
 								<goal>check</goal>
 							</goals>
 							<configuration>
+								<excludes>
+									<exclude>**/*BookingMapperImpl.*</exclude>
+									<exclude>**/*ItemMapperImpl.*</exclude>
+									<exclude>**/*ItemRequestMapperImpl.*</exclude>
+									<exclude>**/*UserMapperImpl.*</exclude>
+								</excludes>
 								<rules>
 									<rule>
 										<element>BUNDLE</element>
@@ -318,5 +336,4 @@
 			</build>
 		</profile>
 	</profiles>
-
 </project>
