@@ -65,7 +65,7 @@ public class BookingServiceImpl implements BookingService {
                     () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Бронирования с id=" + bookingId + " нет"));
             if (!booking.getStatus().equals(Status.WAITING)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "Невозможно изменить статус брони со статусом " + booking.getStatus());
+                        "Невозможно изменить статус брони со статусом " + booking.getStatus() + ".");
             }
             if (booking.getItem().getOwner().getId().equals(ownerId)) {
                 if (approve.equals("true")) {
