@@ -59,8 +59,8 @@ public class BookingController {
             @RequestParam(defaultValue = "ALL") String state,
             @RequestParam(value = "from", defaultValue = "0") @Min(0) Integer from,
             @RequestParam(value = "size", defaultValue = "10") @Min(1) @Max(20) Integer size) {
-        ResponseEntity<List<BookingDtoResponse>> result = ResponseEntity.status(HttpStatus.OK).
-                body(bookingService.getAllBookingsForUser(PageRequest.of(from / size, size), userId, state));
+        ResponseEntity<List<BookingDtoResponse>> result = ResponseEntity.status(HttpStatus.OK)
+                .body(bookingService.getAllBookingsForUser(PageRequest.of(from / size, size), userId, state));
         log.warn("В результате вызова метода getAllBookingsForUser для userId: " + userId + " результат: " + result.getBody() + " .");
         return result;
     }
@@ -71,8 +71,8 @@ public class BookingController {
             @RequestParam(defaultValue = "ALL") String state,
             @RequestParam(value = "from", defaultValue = "0") @Min(0) Integer from,
             @RequestParam(value = "size", defaultValue = "10") @Min(1) @Max(20) Integer size) {
-        ResponseEntity<List<BookingDtoResponse>> result = ResponseEntity.status(HttpStatus.OK).
-                body(bookingService.getAllBookingsForItemsUser(PageRequest.of(from / size, size), userId, state));
+        ResponseEntity<List<BookingDtoResponse>> result = ResponseEntity.status(HttpStatus.OK)
+                .body(bookingService.getAllBookingsForItemsUser(PageRequest.of(from / size, size), userId, state));
         log.warn("В результате вызова метода getAllBookingsForItemsUser для userId: " + userId + " State: " + state + " результат: " + result.getBody() + " .");
         return result;
     }

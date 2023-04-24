@@ -53,8 +53,8 @@ public class ItemController {
             @RequestHeader("X-Sharer-User-Id") @Min(1) Long userId,
             @RequestParam(value = "from", defaultValue = "0") @Min(0) Integer from,
             @RequestParam(value = "size", defaultValue = "10") @Min(1) @Max(20) Integer size) {
-        ResponseEntity<List<ItemDtoResponse>> result = new ResponseEntity<>(itemService.
-                getPersonalItems(PageRequest.of(from / size, size), userId), HttpStatus.OK);
+        ResponseEntity<List<ItemDtoResponse>> result = new ResponseEntity<>(itemService
+                .getPersonalItems(PageRequest.of(from / size, size), userId), HttpStatus.OK);
         log.warn("В результате вызова метода getPersonalItems для userId: " + userId + " результат: " + result.getBody() + " .");
         return result;
     }
@@ -64,8 +64,8 @@ public class ItemController {
             @RequestParam String text,
             @RequestParam(value = "from", defaultValue = "0") @Min(0) Integer from,
             @RequestParam(value = "size", defaultValue = "10") @Min(1) @Max(20) Integer size) {
-        ResponseEntity<List<ItemDtoResponse>> result = new ResponseEntity<>(itemService.
-                getFoundItems(PageRequest.of(from / size, size), text), HttpStatus.OK);
+        ResponseEntity<List<ItemDtoResponse>> result = new ResponseEntity<>(itemService
+                .getFoundItems(PageRequest.of(from / size, size), text), HttpStatus.OK);
         log.warn("В результате вызова метода getFoundItems по значению переменной text: " + text + " был найден результат: " + result.getBody() + " .");
         return result;
     }
