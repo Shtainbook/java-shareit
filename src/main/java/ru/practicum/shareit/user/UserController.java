@@ -1,55 +1,50 @@
 package ru.practicum.shareit.user;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.service.UserService;
-import ru.practicum.shareit.user.service.UserServiceImpl;
+import ru.practicum.shareit.user.dto.UserDtoResponse;
+import ru.practicum.shareit.user.dto.UserDtoUpdate;
+import ru.practicum.shareit.user.dto.UserListDto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
-import java.util.List;
 
 /**
  * TODO Sprint add-controllers.
  */
-
 @RestController
-@RequestMapping(path = "/users")
+@RequestMapping("/users")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UserController {
     private final UserService userService;
 
-    @Autowired
-    public UserController(UserServiceImpl userService) {
-        this.userService = userService;
+    @PostMapping
+    public ResponseEntity<UserDtoResponse> createUser(@Valid @RequestBody UserDto userDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(userDto));
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<UserDto> getUser(@PathVariable @Min(1) long id) {
-        return new ResponseEntity<>(userService.read(id), HttpStatus.OK);
+    public ResponseEntity<UserDtoResponse> getUserById(@PathVariable("id") @Min(1) Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUserById(userId));
     }
 
     @GetMapping
-    public ResponseEntity<List<UserDto>> getAllUser() {
-        return new ResponseEntity<>(userService.readAll(), HttpStatus.OK);
-    }
-
-    @PostMapping
-    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto) {
-        return new ResponseEntity<>(userService.create(userDto), HttpStatus.OK);
+    public ResponseEntity<UserListDto> getUsers() {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.getUsers());
     }
 
     @PatchMapping("{id}")
-    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto, @PathVariable long id) {
-        UserDto userDtoTwo = userService.update(userDto, id);
-        System.out.println(userDtoTwo);
-        return new ResponseEntity<>(userService.update(userDto, id), HttpStatus.OK);
+    public ResponseEntity<UserDtoResponse> updateUser(@RequestBody UserDtoUpdate userDtoUpdate,
+                                                      @PathVariable("id") Long userId) {
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(userDtoUpdate, userId));
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<UserDto> deleteUser(@Min(1) @PathVariable long id) {
-        return new ResponseEntity<>(userService.delete(id), HttpStatus.OK);
+    public void deleteUser(@Min(1) @PathVariable("id") Long userId) {
+        userService.deleteUser(userId);
     }
 }
