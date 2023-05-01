@@ -19,32 +19,32 @@ import java.util.Objects;
 public class ErrorHandler {
     @ExceptionHandler(ResponseStatusException.class)
     private ResponseEntity<String> handleException(ResponseStatusException e) {
-        log.error("произошла ошибка " + e.getMessage());
+        log.error("Произошла ошибка " + e.getMessage());
         return new ResponseEntity<>(e.getMessage(), e.getStatus());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     private ResponseEntity<String> handleException(MethodArgumentNotValidException e) {
-        log.error("произошла ошибка " + e.getMessage());
+        log.error("Произошла ошибка " + e.getMessage());
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST + " " + Objects.requireNonNull(e.getFieldError()).getDefaultMessage(),
                 HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     private ResponseEntity<String> handleException() {
-        log.error("Нарушение уникального индекса или первичного ключа" + HttpStatus.INTERNAL_SERVER_ERROR);
+        log.error("Произошла ошибка " + HttpStatus.INTERNAL_SERVER_ERROR);
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR + "Нарушение уникального индекса или первичного ключа", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(StateException.class)
     private ResponseEntity<StateErrorResponse> handleException(StateException e) {
-        log.error("произошла ошибка.");
+        log.error("Произошла ошибка.");
         return new ResponseEntity<>(new StateErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
     private ResponseEntity<String> handleException(ConstraintViolationException e) {
-        log.error("произошла ошибка " + e.getMessage());
+        log.error("Произошла ошибка " + e.getMessage());
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST + " " + e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
