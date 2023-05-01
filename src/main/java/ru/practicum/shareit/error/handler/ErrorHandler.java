@@ -31,8 +31,8 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    private ResponseEntity<String> handleException() {
-        log.error("Произошла ошибка " + HttpStatus.INTERNAL_SERVER_ERROR);
+    private ResponseEntity<String> handleException(DataIntegrityViolationException e) {
+        log.error("Произошла ошибка " + e.getMessage());
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR + "Нарушение уникального индекса или первичного ключа", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
