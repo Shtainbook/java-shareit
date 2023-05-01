@@ -31,7 +31,7 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<BookingDtoResponse> createBooking(@RequestHeader("X-Sharer-User-Id") @Min(1) Long bookerId,
                                                             @Valid @RequestBody BookingDto bookingDto) {
-        log.warn("Букинг создан ID: " + bookerId + " и BookingDTO: " + bookingDto + " .");
+        log.info("Букинг создан ID: " + bookerId + " и BookingDTO: " + bookingDto + " .");
         return new ResponseEntity<>(bookingService.createBooking(bookerId, bookingDto), HttpStatus.CREATED);
     }
 
@@ -39,7 +39,7 @@ public class BookingController {
     public ResponseEntity<BookingDtoResponse> approveBooking(@RequestHeader("X-Sharer-User-Id") @Min(1) Long ownerId,
                                                              @RequestParam String approved,
                                                              @PathVariable @Min(1) Long bookingId) {
-        log.warn("Букинг подтвержден ownerID: " + ownerId + " и bookingId: " + bookingId + " .");
+        log.info("Букинг подтвержден ownerID: " + ownerId + " и bookingId: " + bookingId + " .");
         return new ResponseEntity<>(bookingService.approveBooking(ownerId, bookingId, approved), HttpStatus.OK);
     }
 
@@ -49,7 +49,7 @@ public class BookingController {
             @RequestHeader("X-Sharer-User-Id") @Min(1) Long userId) {
         ResponseEntity<BookingDtoResponse> result = ResponseEntity.status(HttpStatus.OK)
                 .body(bookingService.getBookingByIdForOwnerAndBooker(bookingId, userId));
-        log.warn("В результате вызова метода getBookingByIdForOwnerAndBooker для userId: " + userId + " результат: " + result.getBody() + " .");
+        log.info("В результате вызова метода getBookingByIdForOwnerAndBooker для userId: " + userId + " результат: " + result.getBody() + " .");
         return result;
     }
 
@@ -61,7 +61,7 @@ public class BookingController {
             @RequestParam(value = "size", defaultValue = "10") @Min(1) @Max(20) Integer size) {
         ResponseEntity<List<BookingDtoResponse>> result = ResponseEntity.status(HttpStatus.OK)
                 .body(bookingService.getAllBookingsForUser(PageRequest.of(from / size, size), userId, state));
-        log.warn("В результате вызова метода getAllBookingsForUser для userId: " + userId + " результат: " + result.getBody() + " .");
+        log.info("В результате вызова метода getAllBookingsForUser для userId: " + userId + " результат: " + result.getBody() + " .");
         return result;
     }
 
@@ -73,7 +73,7 @@ public class BookingController {
             @RequestParam(value = "size", defaultValue = "10") @Min(1) @Max(20) Integer size) {
         ResponseEntity<List<BookingDtoResponse>> result = ResponseEntity.status(HttpStatus.OK)
                 .body(bookingService.getAllBookingsForItemsUser(PageRequest.of(from / size, size), userId, state));
-        log.warn("В результате вызова метода getAllBookingsForItemsUser для userId: " + userId + " State: " + state + " результат: " + result.getBody() + " .");
+        log.info("В результате вызова метода getAllBookingsForItemsUser для userId: " + userId + " State: " + state + " результат: " + result.getBody() + " .");
         return result;
     }
 }

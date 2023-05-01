@@ -28,33 +28,33 @@ public class UserController {
 
     @PostMapping
     public ResponseEntity<UserDtoResponse> createUser(@Valid @RequestBody UserDto userDto) {
-        log.warn("Создан User: " + userDto + " .");
+        log.info("Создан User: " + userDto + " .");
         return new ResponseEntity<>(userService.createUser(userDto), HttpStatus.CREATED);
     }
 
     @GetMapping("{id}")
     public ResponseEntity<UserDtoResponse> getUserById(@PathVariable("id") @Min(1) Long userId) {
-        log.warn("Получени User userId " + userId + " .");
+        log.info("Получени User userId " + userId + " .");
         return new ResponseEntity<>(userService.getUserById(userId), HttpStatus.OK);
     }
 
     @GetMapping
     public ResponseEntity<List<UserDtoResponse>> getUsers() {
         ResponseEntity<List<UserDtoResponse>> result = new ResponseEntity<>(userService.getUserRepository(), HttpStatus.OK);
-        log.warn("Получены Users: " + result.getBody());
+        log.info("Получены Users: " + result.getBody());
         return result;
     }
 
     @PatchMapping("{id}")
     public ResponseEntity<UserDtoResponse> updateUser(@RequestBody UserDtoUpdate userDtoUpdate,
                                                       @PathVariable("id") Long userId) {
-        log.warn(" User: " + userId + " обновлен на следующие данные" + userDtoUpdate + " .");
+        log.info(" User: " + userId + " обновлен на следующие данные" + userDtoUpdate + " .");
         return new ResponseEntity<>(userService.updateUser(userDtoUpdate, userId), HttpStatus.OK);
     }
 
     @DeleteMapping("{id}")
     public void deleteUser(@Min(1) @PathVariable("id") Long userId) {
         userService.deleteUser(userId);
-        log.warn("User: " + userId + " удален.");
+        log.info("User: " + userId + " удален.");
     }
 }

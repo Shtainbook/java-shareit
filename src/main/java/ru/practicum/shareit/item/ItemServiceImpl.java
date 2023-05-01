@@ -88,7 +88,7 @@ public class ItemServiceImpl implements ItemService {
         if (userRepository.existsById(userId)) {
             List<ItemDtoResponse> personalItems = itemRepository.findAllByOwnerId(pageable, userId).stream()
                     .map(itemMapper::mapToItemDtoResponse).collect(Collectors.toList());
-            for (ItemDtoResponse item : personalItems) {
+                        for (ItemDtoResponse item : personalItems) {
                 item.setLastBooking(itemMapper.mapToBookingShortDto(bookingRepository.findFirstByItemIdAndEndBeforeAndStatusOrderByEndDesc(
                         item.getId(), LocalDateTime.now(), Status.APPROVED)));
                 item.setNextBooking(itemMapper.mapToBookingShortDto(bookingRepository

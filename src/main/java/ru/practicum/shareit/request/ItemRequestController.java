@@ -32,7 +32,7 @@ public class ItemRequestController {
     @PostMapping
     public ResponseEntity<ItemRequestDtoResponse> createRequest(@RequestHeader("X-Sharer-User-Id") @Min(1) Long requesterId,
                                                                 @RequestBody @Valid ItemRequestDto itemRequestDto) {
-        log.warn("По RequesterId создан ID: " + requesterId + " и ItemRequestDto: " + itemRequestDto + ".");
+        log.info("По RequesterId создан ID: " + requesterId + " и ItemRequestDto: " + itemRequestDto + ".");
         return new ResponseEntity<>(itemRequestService.createItemRequest(itemRequestDto, requesterId), HttpStatus.OK);
     }
 
@@ -44,7 +44,7 @@ public class ItemRequestController {
         ResponseEntity<List<RequestDtoResponseWithMD>> result = new ResponseEntity<>(itemRequestService.getUserRequests(
                 PageRequest.of(from / size, size).withSort(Sort.by("created").descending()),
                 requesterId), HttpStatus.OK);
-        log.warn("По RequesterId ID: " + requesterId + " получены запросы.");
+        log.info("По RequesterId ID: " + requesterId + " получены запросы.");
         return result;
     }
 
@@ -56,7 +56,7 @@ public class ItemRequestController {
         ResponseEntity<List<RequestDtoResponseWithMD>> result = new ResponseEntity<>(itemRequestService.getDifferentRequests(
                 PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "created")),
                 requesterId), HttpStatus.OK);
-        log.warn("По RequesterId ID: " + requesterId + " получены запросы не включающие запросы самого Юзера.");
+        log.info("По RequesterId ID: " + requesterId + " получены запросы не включающие запросы самого Юзера.");
         return result;
     }
 
@@ -65,7 +65,7 @@ public class ItemRequestController {
             @RequestHeader("X-Sharer-User-Id") @Min(1) Long userId,
             @PathVariable @Min(1) Long requestId) {
         ResponseEntity<RequestDtoResponseWithMD> result = new ResponseEntity<>(itemRequestService.getInfoRequest(userId, requestId), HttpStatus.OK);
-        log.warn("Пользователь с ID: " + userId + " получил информацию по запросам " + requestId + " .");
+        log.info("Пользователь с ID: " + userId + " получил информацию по запросам " + requestId + " .");
         return result;
     }
 }
