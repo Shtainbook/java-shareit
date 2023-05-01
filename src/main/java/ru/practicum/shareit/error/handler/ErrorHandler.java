@@ -32,7 +32,7 @@ public class ErrorHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     private ResponseEntity<String> handleException() {
-        log.error("Нарушение уникального индекса или первичного ключа " );
+        log.error("Нарушение уникального индекса или первичного ключа");
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR + " Нарушение уникального индекса или первичного ключа",
                 HttpStatus.INTERNAL_SERVER_ERROR);
     }
