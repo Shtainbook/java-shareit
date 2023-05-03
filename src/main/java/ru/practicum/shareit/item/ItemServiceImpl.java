@@ -85,17 +85,19 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional(readOnly = true)
     public List<ItemDtoResponse> getPersonalItems(Pageable pageable, Long userId) {
+
         if (userRepository.existsById(userId)) {
-            List<ItemDtoResponse> personalItems = itemRepository.findAllByOwnerId(pageable, userId).stream()
-                    .map(itemMapper::mapToItemDtoResponse).collect(Collectors.toList());
-                        for (ItemDtoResponse item : personalItems) {
-                item.setLastBooking(itemMapper.mapToBookingShortDto(bookingRepository.findFirstByItemIdAndEndBeforeAndStatusOrderByEndDesc(
-                        item.getId(), LocalDateTime.now(), Status.APPROVED)));
-                item.setNextBooking(itemMapper.mapToBookingShortDto(bookingRepository
-                        .findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(
+
+            return itemRepository.findAllByOwnerId(pageable, userId).stream()
+                    .map(itemMapper::mapToItemDtoResponse)
+                    .peek(item -> {
+                        item.setLastBooking(itemMapper.mapToBookingShortDto(bookingRepository.findFirstByItemIdAndEndBeforeAndStatusOrderByEndDesc(
                                 item.getId(), LocalDateTime.now(), Status.APPROVED)));
-            }
-            return personalItems;
+                        item.setNextBooking(itemMapper.mapToBookingShortDto(bookingRepository
+                                .findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(
+                                        item.getId(), LocalDateTime.now(), Status.APPROVED)));
+                    })
+                    .collect(Collectors.toList());
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователя с id=" + userId + " не существует");
     }
