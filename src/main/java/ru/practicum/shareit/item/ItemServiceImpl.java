@@ -18,9 +18,11 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
+import java.awt.print.Book;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,17 +89,21 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDtoResponse> getPersonalItems(Pageable pageable, Long userId) {
 
         if (userRepository.existsById(userId)) {
-
-            return itemRepository.findAllByOwnerId(pageable, userId).stream()
-                    .map(itemMapper::mapToItemDtoResponse)
-                    .peek(item -> {
-                        item.setLastBooking(itemMapper.mapToBookingShortDto(bookingRepository.findFirstByItemIdAndEndBeforeAndStatusOrderByEndDesc(
-                                item.getId(), LocalDateTime.now(), Status.APPROVED)));
-                        item.setNextBooking(itemMapper.mapToBookingShortDto(bookingRepository
-                                .findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(
-                                        item.getId(), LocalDateTime.now(), Status.APPROVED)));
-                    })
-                    .collect(Collectors.toList());
+            List<ItemDtoResponse> personalItems = itemRepository.findAllByOwnerId(pageable, userId).stream()
+                    .map(itemMapper::mapToItemDtoResponse).collect(Collectors.toList());
+            List<Long> itemsID = personalItems.stream().map(ItemDtoResponse::getId).collect(Collectors.toList());
+            List<Booking> listLastBooking = bookingRepository
+                    .findByItemIdInAndEndBeforeAndStatusOrderByEndDesc(itemsID, LocalDateTime.now(), Status.APPROVED);
+            List<Booking> listNextBooking = bookingRepository
+                    .findByItemIdInAndStartAfterAndStatusOrderByStartAsc(itemsID, LocalDateTime.now(), Status.APPROVED);
+            for (ItemDtoResponse element : personalItems
+            ) {
+                element.setLastBooking(itemMapper.mapToBookingShortDto(listLastBooking.stream()
+                        .filter(a -> Objects.equals(a.getItem().getId(), element.getId())).findFirst().orElse(null)));
+                element.setNextBooking(itemMapper.mapToBookingShortDto(listNextBooking.stream()
+                        .filter(a -> Objects.equals(a.getItem().getId(), element.getId())).findFirst().orElse(null)));
+            }
+            return personalItems;
         }
         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователя с id=" + userId + " не существует");
     }

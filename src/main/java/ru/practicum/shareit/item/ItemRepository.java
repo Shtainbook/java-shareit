@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import ru.practicum.shareit.item.model.Item;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ItemRepository extends PagingAndSortingRepository<Item, Long> {
@@ -15,6 +16,7 @@ public interface ItemRepository extends PagingAndSortingRepository<Item, Long> {
                                                                               String description);
 
     Boolean existsItemByOwnerId(Long ownerId);
+
 
     @Query("SELECT i.id FROM Item AS i " +
             "JOIN User As u ON i.owner.id=u.id " +
