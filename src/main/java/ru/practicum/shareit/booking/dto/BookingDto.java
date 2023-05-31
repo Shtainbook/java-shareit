@@ -2,7 +2,6 @@ package ru.practicum.shareit.booking.dto;
 
 import lombok.Builder;
 import lombok.Data;
-import lombok.ToString;
 import ru.practicum.shareit.booking.Status;
 
 import javax.validation.constraints.Future;
@@ -15,7 +14,6 @@ import java.time.LocalDateTime;
  */
 @Data
 @Builder
-@ToString
 public class BookingDto {
     @NotNull(message = "Поле start обязательно")
     @Future(message = "Начало бронирования не может быть в прошлом")
@@ -27,8 +25,4 @@ public class BookingDto {
     @Min(value = 1, message = "Некорректный itemId")
     private Long itemId;
     private final Status status = Status.WAITING;
-
-
-
 }
-

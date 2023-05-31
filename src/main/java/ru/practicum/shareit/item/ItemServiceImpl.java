@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,12 +13,15 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequestRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,11 +32,18 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
     private final ItemMapper itemMapper;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Override
     @Transactional
     public ItemDtoResponse createItem(ItemDto item, Long userId) throws ResponseStatusException {
         Item newItem = itemMapper.mapToItemFromItemDto(item);
+        if (item.getRequestId() != null) {
+            ItemRequest itemRequest = itemRequestRepository.findById(item.getRequestId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Запроса с id=" +
+                            item.getRequestId() + " нет"));
+            newItem.setRequest(itemRequest);
+        }
         newItem.setOwner(userRepository.findById(userId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователя с id=" + userId + " нет")));
         return itemMapper.mapToItemDtoResponse(itemRepository.save(newItem));
@@ -43,11 +54,11 @@ public class ItemServiceImpl implements ItemService {
     public ItemDtoResponse updateItem(Long itemId, Long userId, ItemDtoUpdate item) {
         Item updateItem = itemRepository.findById(itemId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Предмета с id=" + itemId + " нет"));
-        if (!updateItem.getOwner().getId().equals(userId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "Предмет с id=" + itemId + " пользователю с id=" + userId + " не пренадлежит");
+        if (updateItem.getOwner().getId().equals(userId)) {
+            return itemMapper.mapToItemDtoResponse(itemRepository.save(itemMapper.mapToItemFromItemDtoUpdate(item, updateItem)));
         }
-        return itemMapper.mapToItemDtoResponse(itemRepository.save(itemMapper.mapToItemFromItemDtoUpdate(item, updateItem)));
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                "Предмет с id=" + itemId + " пользователю с id=" + userId + " не пренадлежит");
     }
 
     @Override
@@ -57,7 +68,6 @@ public class ItemServiceImpl implements ItemService {
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Предмета с id=" + itemId + " нет"));
         ItemDtoResponse itemDtoResponse = itemMapper.mapToItemDtoResponse(item);
         if (item.getOwner().getId().equals(userId)) {
-
             Booking lastBooking = bookingRepository.findFirstByItemIdAndEndBeforeAndStatusOrderByEndDesc(itemId, LocalDateTime.now(), Status.APPROVED);
             if (lastBooking == null) {
                 lastBooking = bookingRepository.findFirstByItemIdAndStartBeforeAndEndAfterAndStatusOrderByEndDesc(itemId, LocalDateTime.now(), LocalDateTime.now(), Status.APPROVED);
@@ -75,42 +85,43 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional(readOnly = true)
-    public ItemListDto getPersonalItems(Long userId) {
-        if (!userRepository.existsById(userId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователя с id=" + userId + " не существует");
+    public List<ItemDtoResponse> getPersonalItems(Pageable pageable, Long userId) {
+
+        if (userRepository.existsById(userId)) {
+            List<ItemDtoResponse> personalItems = itemRepository.findAllByOwnerId(pageable, userId).stream()
+                    .map(itemMapper::mapToItemDtoResponse).collect(Collectors.toList());
+            List<Long> itemsID = personalItems.stream().map(ItemDtoResponse::getId).collect(Collectors.toList());
+            List<Booking> listLastBooking = bookingRepository
+                    .findByItemIdInAndEndBeforeAndStatusOrderByEndDesc(itemsID, LocalDateTime.now(), Status.APPROVED);
+            List<Booking> listNextBooking = bookingRepository
+                    .findByItemIdInAndStartAfterAndStatusOrderByStartAsc(itemsID, LocalDateTime.now(), Status.APPROVED);
+            for (ItemDtoResponse element : personalItems
+            ) {
+                element.setLastBooking(itemMapper.mapToBookingShortDto(listLastBooking.stream()
+                        .filter(a -> Objects.equals(a.getItem().getId(), element.getId())).findFirst().orElse(null)));
+                element.setNextBooking(itemMapper.mapToBookingShortDto(listNextBooking.stream()
+                        .filter(a -> Objects.equals(a.getItem().getId(), element.getId())).findFirst().orElse(null)));
+            }
+            return personalItems;
         }
-        List<ItemDtoResponse> personalItems = itemRepository.findAllByOwnerId(userId).stream()
-                .map(itemMapper::mapToItemDtoResponse).collect(Collectors.toList());
-        for (ItemDtoResponse item : personalItems) {
-            item.setLastBooking(itemMapper.mapToBookingShortDto(bookingRepository.findFirstByItemIdAndEndBeforeAndStatusOrderByEndDesc(
-                    item.getId(), LocalDateTime.now(), Status.APPROVED)));
-            item.setNextBooking(itemMapper.mapToBookingShortDto(bookingRepository
-                    .findFirstByItemIdAndStartAfterAndStatusOrderByStartAsc(
-                            item.getId(), LocalDateTime.now(), Status.APPROVED)
-            ));
-        }
-        return ItemListDto.builder().items(personalItems).build();
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователя с id=" + userId + " не существует");
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ItemListDto getFoundItems(String text) {
+    public List<ItemDtoResponse> getFoundItems(Pageable pageable, String text) {
         if (text.isBlank()) {
-            return ItemListDto.builder().items(new ArrayList<>()).build();
+            return new ArrayList<>();
         }
-        return ItemListDto.builder()
-                .items(itemRepository.findAllByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(text, text).stream()
-                        .map(itemMapper::mapToItemDtoResponse).collect(Collectors.toList())).build();
+        return itemRepository.findAllByNameOrDescriptionContainingIgnoreCaseAndAvailableTrue(pageable, text, text).stream()
+                .map(itemMapper::mapToItemDtoResponse).collect(Collectors.toList());
     }
 
     @Override
     @Transactional
     public CommentDtoResponse addComment(Long itemId, Long userId, CommentDto commentDto) {
-        if (!bookingRepository.existsBookingByItemIdAndBookerIdAndStatusAndEndIsBefore(itemId, userId,
+        if (bookingRepository.existsBookingByItemIdAndBookerIdAndStatusAndEndIsBefore(itemId, userId,
                 Status.APPROVED, LocalDateTime.now())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "У пользователя с id="
-                    + userId + " небыло ниодной брони на предмет с id=" + itemId);
-        } else {
             User author = userRepository.findById(userId).orElseThrow(
                     () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователя с id=" + userId + " нет"));
             Item item = itemRepository.findById(itemId).orElseThrow(
@@ -121,5 +132,6 @@ public class ItemServiceImpl implements ItemService {
             comment.setCreated(LocalDateTime.now());
             return itemMapper.mapToCommentDtoResponseFromComment(commentRepository.save(comment));
         }
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "У пользователя с id=" + userId + " не было ни одной брони на предмет с id=" + itemId);
     }
 }

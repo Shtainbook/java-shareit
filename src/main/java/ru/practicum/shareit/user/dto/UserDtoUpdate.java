@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 @Builder
 @Getter
 public class UserDtoUpdate {
-    @Pattern(regexp = "^\\w+.*\\S$", message = "Неккоректное имя")
+    @Pattern(regexp = "^[^ ].*[^ ]$", message = "Неккоректное имя")
     @Size(max = 255)
     private String name;
     @Email(message = "Некорректный email")

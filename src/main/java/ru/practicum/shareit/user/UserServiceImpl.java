@@ -9,47 +9,47 @@ import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserDtoResponse;
 import ru.practicum.shareit.user.dto.UserDtoUpdate;
-import ru.practicum.shareit.user.dto.UserListDto;
 import ru.practicum.shareit.user.model.User;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class UserServiceImpl implements UserService {
-    private final UserRepository users;
-
-    private final UserMapper mapper;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     @Override
     public UserDtoResponse createUser(UserDto user) {
-        return mapper.mapToUserDtoResponse(users.save(mapper.mapToUserFromUserDto(user)));
+        return userMapper.mapToUserDtoResponse(userRepository.save(userMapper.mapToUserFromUserDto(user)));
     }
 
     @Override
     public UserDtoResponse getUserById(Long id) {
-        return mapper.mapToUserDtoResponse(users.findById(id).orElseThrow(
+        return userMapper.mapToUserDtoResponse(userRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователя с id=" + id + " нет"))
         );
     }
 
-    @Override
-    public UserListDto getUsers() {
-        return UserListDto.builder()
-                .users(users.findAll().stream().map(mapper::mapToUserDtoResponse).collect(Collectors.toList()))
-                .build();
+    public List<UserDtoResponse> getUserRepository() {
+        return userRepository.findAll().stream().map(userMapper::mapToUserDtoResponse).collect(Collectors.toList());
     }
 
     @Override
     @Transactional
     public UserDtoResponse updateUser(UserDtoUpdate user, Long userId) {
-        User updatingUser = users.findById(userId).orElseThrow(
+        User updatingUser = userRepository.findById(userId).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователя с id=" + userId + " нет"));
-        return mapper.mapToUserDtoResponse(users.save(mapper.mapToUserFromUserDtoUpdate(user, updatingUser)));
+        return userMapper.mapToUserDtoResponse(userRepository.save(userMapper.mapToUserFromUserDtoUpdate(user, updatingUser)));
     }
 
     @Override
     public void deleteUser(Long id) {
-        users.deleteById(id);
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
+            return;
+        }
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователя с id=" + id + " нет");
     }
 }

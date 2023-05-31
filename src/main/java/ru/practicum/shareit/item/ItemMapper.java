@@ -9,6 +9,7 @@ import ru.practicum.shareit.item.model.Item;
 
 @Mapper(componentModel = "spring")
 public interface ItemMapper {
+    @Mapping(source = "request.id", target = "requestId")
     ItemDtoResponse mapToItemDtoResponse(Item item);
 
     Item mapToItemFromItemDto(ItemDto itemDto);
@@ -23,4 +24,5 @@ public interface ItemMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Item mapToItemFromItemDtoUpdate(ItemDtoUpdate itemDtoUpdate, @MappingTarget Item item);
+
 }
