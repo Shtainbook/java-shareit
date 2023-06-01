@@ -3,13 +3,9 @@ package ru.practicum.shareit.request.dto;
 import lombok.Builder;
 import lombok.Data;
 import lombok.extern.jackson.Jacksonized;
-import ru.practicum.shareit.item.dto.ItemDto;
 
-import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Builder

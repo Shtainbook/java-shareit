@@ -2,12 +2,10 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingState;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -52,8 +50,8 @@ public class BookingController {
     public ResponseEntity<Object> getAllBookingsForUser(
             @RequestHeader("X-Sharer-User-Id") @Min(1) Long userId,
             @RequestParam(defaultValue = "ALL") String state,
-            @RequestParam (value = "from", defaultValue = "0") @Min(0)Integer from,
-            @RequestParam(value = "size", defaultValue = "10") @Min(1) @Max(20)Integer size) {
+            @RequestParam(value = "from", defaultValue = "0") @Min(0) Integer from,
+            @RequestParam(value = "size", defaultValue = "10") @Min(1) @Max(20) Integer size) {
 
 //        if (state == null) state = "ALL";
 //        String finalStateParam = state;
@@ -68,7 +66,6 @@ public class BookingController {
 //        //orElseThrow(() ->
 
 
-
         log.info("В результате вызова метода getAllBookingsForUser для userId:={}", userId);
         return bookingClient.getAllBookingsForUser(userId, state, from, size);
     }
@@ -78,7 +75,7 @@ public class BookingController {
             @RequestHeader("X-Sharer-User-Id") @Min(1) Long userId,
             @RequestParam(defaultValue = "ALL") String state,
             @RequestParam(value = "from", defaultValue = "0") @Min(0) Integer from,
-            @RequestParam(value = "size", defaultValue = "10") @Min(1) @Max(20)Integer size) {
+            @RequestParam(value = "size", defaultValue = "10") @Min(1) @Max(20) Integer size) {
 
 //        if (state == null) state = "ALL";
 //        String finalStateParam = state;

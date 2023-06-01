@@ -7,6 +7,7 @@ import javax.validation.constraints.Future;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+
 @Data
 @Builder
 public class BookingDto {
@@ -20,5 +21,4 @@ public class BookingDto {
     @Min(value = 1, message = "Некорректный itemId")
     private Long itemId;
     private final Status status = Status.WAITING;
-
 }
