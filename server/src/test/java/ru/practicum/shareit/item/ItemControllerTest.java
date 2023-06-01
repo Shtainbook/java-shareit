@@ -92,6 +92,7 @@ public class ItemControllerTest {
                         content().json(objectMapper.writeValueAsString(itemDtoResponse))
                 );
     }
+
     @SneakyThrows
     @Test
     public void getItemById() {
@@ -125,7 +126,6 @@ public class ItemControllerTest {
                         content().json(objectMapper.writeValueAsString(itemListDto))
                 );
     }
-
 
 
     @SneakyThrows

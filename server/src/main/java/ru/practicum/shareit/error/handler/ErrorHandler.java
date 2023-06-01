@@ -44,8 +44,8 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity <StateErrorResponse> handleThrowable(final Throwable e) {
-        return new ResponseEntity<>(new StateErrorResponse(e.getMessage()),HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<StateErrorResponse> handleThrowable(final Throwable e) {
+        return new ResponseEntity<>(new StateErrorResponse(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 //    @ExceptionHandler(ConstraintViolationException.class)
