@@ -10,7 +10,7 @@ services:
       - server
     environment:
       - SHAREIT_SERVER_URL=http://server:9090
-      #- TZ=Europe/Moscow
+      - TZ=GMT
     restart: on-failure
 
   server:
@@ -25,7 +25,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/shareit
       - POSTGRES_USERNAME=share_it_user
       - POSTGRES_PASSWORD=password
-      #- TZ=Europe/Moscow
+      - TZ=GMT
     restart: on-failure
 
   db:
@@ -39,4 +39,4 @@ services:
       - POSTGRES_DB=shareit
       - POSTGRES_USER=share_it_user
       - POSTGRES_PASSWORD=password
-      #- TZ=Europe/Moscow
+      - TZ=GMT
