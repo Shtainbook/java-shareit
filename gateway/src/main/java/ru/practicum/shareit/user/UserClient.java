@@ -13,7 +13,6 @@ import ru.practicum.shareit.user.dto.UserDtoUpdate;
 
 @Service
 public class UserClient extends BaseClient {
-
     private static final String API_PREFIX = "/users";
 
     @Autowired

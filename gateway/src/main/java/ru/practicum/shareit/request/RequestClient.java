@@ -30,7 +30,6 @@ public class RequestClient extends BaseClient {
         return post("", requesterId, itemRequestDto);
     }
 
-    //у севы нет мапы с пежаблей
     public ResponseEntity<Object> getUserRequests(Long requesterId, Integer from, Integer size) {
         Map<String, Object> result = Map.of(
                 "from", from,

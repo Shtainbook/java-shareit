@@ -20,7 +20,6 @@ import javax.validation.constraints.Min;
 @Validated
 public class ItemController {
 
-
     private final ItemClient itemClient;
 
     @PostMapping

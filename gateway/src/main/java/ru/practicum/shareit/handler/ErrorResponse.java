@@ -1,7 +1,6 @@
 package ru.practicum.shareit.handler;
 
 public class ErrorResponse {
-
     private final String error;
 
     public ErrorResponse(String error) {
@@ -11,5 +10,4 @@ public class ErrorResponse {
     public String getError() {
         return error;
     }
-
 }

@@ -30,7 +30,6 @@ public class BookingClient extends BaseClient {
         return post("", bookerId, bookingDto);
     }
 
-    //нужен ли нулл в бади?
     public ResponseEntity<Object> approveBooking(Long ownerId, String approved, Long bookingId) {
         Map<String, Object> parameters = Map.of(
                 "approved", approved
@@ -43,7 +42,7 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getAllBookingsForUser(long userId, String state, Integer from, Integer size) {
-    //public ResponseEntity<Object> getAllBookingsForUser(long userId, BookingState state, Integer from, Integer size) {
+        //public ResponseEntity<Object> getAllBookingsForUser(long userId, BookingState state, Integer from, Integer size) {
         Map<String, Object> parameters = Map.of(
                 //"state", state.name(),
                 "state", state,
@@ -53,7 +52,6 @@ public class BookingClient extends BaseClient {
         return get("?state={state}&from={from}&size={size}", userId, parameters);
     }
 
-    //public ResponseEntity<Object> getAllBookingsForItemsUser(long userId, BookingState state, Integer from, Integer size) {
     public ResponseEntity<Object> getAllBookingsForItemsUser(long userId, String state, Integer from, Integer size) {
 
         Map<String, Object> parameters = Map.of(

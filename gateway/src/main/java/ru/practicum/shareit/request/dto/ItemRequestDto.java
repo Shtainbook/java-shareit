@@ -14,7 +14,4 @@ public class ItemRequestDto {
     @NotBlank(message = "поле text не должно быть пустым")
     @Size(max = 500, message = "Превышена максимальная длина сообщения")
     private String description;
-//    @FutureOrPresent
-//    private LocalDateTime created;//++
-//    private List<ItemDto> items;//++
 }

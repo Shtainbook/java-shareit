@@ -47,10 +47,4 @@ public class ErrorHandler {
     public ResponseEntity<StateErrorResponse> handleThrowable(final Throwable e) {
         return new ResponseEntity<>(new StateErrorResponse(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-//    @ExceptionHandler(ConstraintViolationException.class)
-//    private ResponseEntity<String> handleException(ConstraintViolationException e) {
-//        log.error("Произошла ошибка " + e.getMessage());
-//        return new ResponseEntity<>(HttpStatus.BAD_REQUEST + " " + e.getMessage(), HttpStatus.BAD_REQUEST);
-//    }
 }
