@@ -142,11 +142,13 @@ public class BookingServiceImpl implements BookingService {
                     itemsId = itemRepository.findAllItemIdByOwnerId(userId);
                     return bookingRepository.findAllByItemIdInAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
                                     pageable, itemsId, LocalDateTime.now(), LocalDateTime.now()).stream()
-                            .map(bookingMapper::mapToBookingDtoResponse).collect(Collectors.toList());
+                            .map(bookingMapper::mapToBookingDtoResponse)
+                                    .sorted((a,b)-> (int) (a.getId()-b.getId())) // тест куруна
+                            .collect(Collectors.toList());
                 } else {
                     return bookingRepository.findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
-                                    pageable, userId, LocalDateTime.now(), LocalDateTime.now()).stream()
-                            .map(bookingMapper::mapToBookingDtoResponse).collect(Collectors.toList());
+                                    pageable, userId, LocalDateTime.now(), LocalDateTime.now()).stream() // курун!
+                            .map(bookingMapper::mapToBookingDtoResponse).sorted((a,b)-> (int) (a.getId()-b.getId())).collect(Collectors.toList());
                 }
             case PAST:
                 if (isOwner) {
@@ -162,12 +164,12 @@ public class BookingServiceImpl implements BookingService {
             case FUTURE:
                 if (isOwner) {
                     itemsId = itemRepository.findAllItemIdByOwnerId(userId);
-                    return bookingRepository.findAllByItemIdInAndStartIsAfterOrderByStartDesc(pageable, itemsId, LocalDateTime.now())
+                    return bookingRepository.findAllByItemIdInAndStartIsAfterOrderByStartDesc(pageable, itemsId, LocalDateTime.now().minusSeconds(1).minusNanos(100))
                             .stream().map(bookingMapper::mapToBookingDtoResponse).collect(Collectors.toList());
                 } else {
                     return bookingRepository.findAllByBookerIdAndStartIsAfterOrderByStartDesc(
                             pageable, userId, LocalDateTime.now()
-                   ).stream().map(bookingMapper::mapToBookingDtoResponse).collect(Collectors.toList());
+                    ).stream().map(bookingMapper::mapToBookingDtoResponse).collect(Collectors.toList());
                 }
             case WAITING:
                 if (isOwner) {

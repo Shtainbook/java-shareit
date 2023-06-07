@@ -58,6 +58,7 @@ public class BookingController {
             @RequestParam(value = "size", defaultValue = "10") Integer size) {
         ResponseEntity<List<BookingDtoResponse>> result = ResponseEntity.status(HttpStatus.OK)
                 .body(bookingService.getAllBookingsForUser(PageRequest.of(from / size, size), userId, state));
+
         log.info("В результате вызова метода getAllBookingsForUser для userId: " + userId + " результат: " + result.getBody() + " .");
         return result;
     }

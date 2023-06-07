@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * TODO Sprint add-controllers.
@@ -51,7 +52,8 @@ public class ItemController {
             @RequestParam(value = "from", defaultValue = "0") Integer from,
             @RequestParam(value = "size", defaultValue = "10") Integer size) {
         ResponseEntity<List<ItemDtoResponse>> result = new ResponseEntity<>(itemService
-                .getPersonalItems(PageRequest.of(from / size, size), userId), HttpStatus.OK);
+                .getPersonalItems(PageRequest.of(from / size, size), userId)
+                .stream().sorted((a,b)-> (int) (a.getId()-b.getId())).collect(Collectors.toList()), HttpStatus.OK);
         log.info("В результате вызова метода getPersonalItems для userId: " + userId + " результат: " + result.getBody() + " .");
         return result;
     }

@@ -20,7 +20,6 @@ public class BookingController {
 
     private final BookingClient bookingClient;
 
-    //		log.info("Get booking {}, userId={}", bookingId, userId);
     @GetMapping("{bookingId}")
     public ResponseEntity<Object> getBookingByIdForOwnerAndBooker(
             @PathVariable @Min(1) Long bookingId,
@@ -52,20 +51,6 @@ public class BookingController {
             @RequestParam(defaultValue = "ALL") String state,
             @RequestParam(value = "from", defaultValue = "0") @Min(0) Integer from,
             @RequestParam(value = "size", defaultValue = "10") @Min(1) @Max(20) Integer size) {
-
-//        if (state == null) state = "ALL";
-//        String finalStateParam = state;
-//        BookingState param = null;
-//
-//        try {
-//            param = BookingState.from(finalStateParam).get();
-//        } catch (Exception e) {
-//            throw new IllegalArgumentException("Unknown state: " + finalStateParam);
-//        }
-//
-//        //orElseThrow(() ->
-
-
         log.info("В результате вызова метода getAllBookingsForUser для userId:={}", userId);
         return bookingClient.getAllBookingsForUser(userId, state, from, size);
     }
@@ -76,17 +61,6 @@ public class BookingController {
             @RequestParam(defaultValue = "ALL") String state,
             @RequestParam(value = "from", defaultValue = "0") @Min(0) Integer from,
             @RequestParam(value = "size", defaultValue = "10") @Min(1) @Max(20) Integer size) {
-
-//        if (state == null) state = "ALL";
-//        String finalStateParam = state;
-//        BookingState param = null;
-//
-//        try {
-//            param = BookingState.from(finalStateParam).get();
-//        } catch (Exception e) {
-//            throw new IllegalArgumentException("Unknown state: " + finalStateParam);
-//        }
-
         log.info("В результате вызова метода getAllBookingsForItemsUser для userId:={}", userId);
         return bookingClient.getAllBookingsForItemsUser(userId, state, from, size);
     }

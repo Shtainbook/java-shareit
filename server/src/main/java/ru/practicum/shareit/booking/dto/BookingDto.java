@@ -13,5 +13,4 @@ public class BookingDto {
     private LocalDateTime end;
     private Long itemId;
     private final Status status = Status.WAITING;
-    //++
 }
