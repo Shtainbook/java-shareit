@@ -53,7 +53,7 @@ public class ItemController {
             @RequestParam(value = "size", defaultValue = "10") Integer size) {
         ResponseEntity<List<ItemDtoResponse>> result = new ResponseEntity<>(itemService
                 .getPersonalItems(PageRequest.of(from / size, size), userId)
-                .stream().sorted((a,b)-> (int) (a.getId()-b.getId())).collect(Collectors.toList()), HttpStatus.OK);
+                .stream().sorted((a, b) -> (int) (a.getId() - b.getId())).collect(Collectors.toList()), HttpStatus.OK);
         log.info("В результате вызова метода getPersonalItems для userId: " + userId + " результат: " + result.getBody() + " .");
         return result;
     }

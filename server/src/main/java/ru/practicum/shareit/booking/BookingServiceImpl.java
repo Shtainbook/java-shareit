@@ -143,12 +143,12 @@ public class BookingServiceImpl implements BookingService {
                     return bookingRepository.findAllByItemIdInAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
                                     pageable, itemsId, LocalDateTime.now(), LocalDateTime.now()).stream()
                             .map(bookingMapper::mapToBookingDtoResponse)
-                                    .sorted((a,b)-> (int) (a.getId()-b.getId())) // тест куруна
+                            .sorted((a, b) -> (int) (a.getId() - b.getId()))
                             .collect(Collectors.toList());
                 } else {
                     return bookingRepository.findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
-                                    pageable, userId, LocalDateTime.now(), LocalDateTime.now()).stream() // курун!
-                            .map(bookingMapper::mapToBookingDtoResponse).sorted((a,b)-> (int) (a.getId()-b.getId())).collect(Collectors.toList());
+                                    pageable, userId, LocalDateTime.now(), LocalDateTime.now()).stream()
+                            .map(bookingMapper::mapToBookingDtoResponse).sorted((a, b) -> (int) (a.getId() - b.getId())).collect(Collectors.toList());
                 }
             case PAST:
                 if (isOwner) {
