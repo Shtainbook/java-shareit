@@ -19,32 +19,33 @@ import java.util.Objects;
 public class ErrorHandler {
     @ExceptionHandler(ResponseStatusException.class)
     private ResponseEntity<String> handleException(ResponseStatusException e) {
-        log.error("Произошла ошибка " + e.getMessage());
+        log.error("Произошла ошибка ResponseStatusException " + e.getMessage());
         return new ResponseEntity<>(e.getMessage(), e.getStatus());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     private ResponseEntity<String> handleException(MethodArgumentNotValidException e) {
-        log.error("Произошла ошибка " + e.getMessage());
+        log.error("Произошла ошибка MethodArgumentNotValidException " + e.getMessage());
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST + " " + Objects.requireNonNull(e.getFieldError()).getDefaultMessage(),
                 HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     private ResponseEntity<String> handleException(DataIntegrityViolationException e) {
-        log.error("Произошла ошибка " + e.getMessage());
+        log.error("Произошла ошибка DataIntegrityViolationException " + e.getMessage());
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR + "Нарушение уникального индекса или первичного ключа", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(StateException.class)
     private ResponseEntity<StateErrorResponse> handleException(StateException e) {
-        log.error("Произошла ошибка.");
+        log.error("Произошла ошибка StateErrorResponse.");
         return new ResponseEntity<>(new StateErrorResponse(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<StateErrorResponse> handleThrowable(final Throwable e) {
+        log.error("Произошла ошибка ErrorResponse " + e.getMessage());
         return new ResponseEntity<>(new StateErrorResponse(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
